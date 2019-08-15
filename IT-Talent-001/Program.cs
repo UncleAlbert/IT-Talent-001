@@ -83,7 +83,7 @@ namespace IT_Talent_001
 
             if (fileExtension.ToUpper() == "CSV")
             {
-                Console.WriteLine("File Type is : " + fileExtension.ToUpper());
+                Console.WriteLine("File Type is : " + fileExtension.ToUpper() + " and IS valid.");
 
                 //Use CSV Helper to load the data 
                 //We need an order list object to store the data from each order object
@@ -100,6 +100,10 @@ namespace IT_Talent_001
                         OrderList.Add(orderRecord);
                     }
                 }
+            }
+            else
+            {
+                Console.WriteLine("File Type is : " + fileExtension.ToUpper() + " and IS NOT valid.");
             }
 
 
