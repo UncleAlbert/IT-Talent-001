@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CsvHelper;
 
 namespace IT_Talent_001
 {
@@ -73,8 +74,40 @@ namespace IT_Talent_001
 
         public static void ProcessFile(string path)
         {
+            Console.WriteLine("Commenced processing of file {0}.", path);
 
-            Console.WriteLine("Processed file '{0}'.", path);
+            //We need to check that the file is a csv file
+            Console.WriteLine("Checking File Type");
+            string fileExtension;
+            fileExtension = Path.GetExtension(path);
+
+            if (fileExtension.ToUpper() == "CSV")
+            {
+                Console.WriteLine("File Type is : " + fileExtension.ToUpper());
+
+                //Use CSV Helper to load the data 
+                //We need an order list object to store the data from each order object
+                List<Order> OrderList = new List<Order>();
+
+                using (TextReader reader = File.OpenText(path))
+                {
+                    CsvReader fileToProcess = new CsvReader(reader);
+                    fileToProcess.Configuration.Delimiter = ",";
+                    fileToProcess.Configuration.MissingFieldFound = null;
+                    while (fileToProcess.Read())
+                    {
+                        Order orderRecord = fileToProcess.GetRecord<Order>();
+                        OrderList.Add(orderRecord);
+                    }
+                }
+            }
+
+
+
+
+
+
+            Console.WriteLine("Completed processing of file {0}.", path);
         }
     }
 }
