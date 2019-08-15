@@ -25,7 +25,7 @@ namespace IT_Talent_001
                     // Check to see if the path is a file first.  If it does exist it is a file
                     if (File.Exists(path))
                     {
-                        Console.WriteLine("The file {0} exists.", path);
+                        Console.WriteLine("The file [{0}] exists.", path);
                         //Process the file
                         ProcessFile(path);
 
@@ -33,12 +33,13 @@ namespace IT_Talent_001
                     // Check to see if the path is a directory.   If it does exist it is a directory
                     else if (Directory.Exists(path))
                     {
-
+                        Console.WriteLine("The directory [{0}] exists.", path);
+                        ProcessDirectory(path);
                     }
                     // If the path is neither a file or a directory it cannot be processed so display an appropriate message in the console.
                     else
                     {
-                        Console.WriteLine("{0} is not a valid file or directory,", path);
+                        Console.WriteLine("[{0}] is not a valid file or directory,", path);
                     }
 
                 }
@@ -61,7 +62,7 @@ namespace IT_Talent_001
 
             foreach (string fileName in fileEntries)
             {
-                //ProcessFile(fileName);
+                ProcessFile(fileName);
             }                
 
             // If the directory contains sub-directories then we can recurse into those directory subdirectories.
@@ -74,14 +75,14 @@ namespace IT_Talent_001
 
         public static void ProcessFile(string path)
         {
-            Console.WriteLine("Commenced processing of file {0}.", path);
+            Console.WriteLine("Commenced processing of file [{0}].", path);
 
             //We need to check that the file is a csv file
             Console.WriteLine("Checking File Type");
             string fileExtension;
             fileExtension = Path.GetExtension(path);
 
-            if (fileExtension.ToUpper() == "CSV")
+            if (fileExtension.ToUpper().Substring(1) == "CSV")
             {
                 Console.WriteLine("File Type is : " + fileExtension.ToUpper() + " and IS valid.");
 
@@ -96,6 +97,7 @@ namespace IT_Talent_001
                     fileToProcess.Configuration.MissingFieldFound = null;
                     while (fileToProcess.Read())
                     {
+                        
                         Order orderRecord = fileToProcess.GetRecord<Order>();
                         OrderList.Add(orderRecord);
                     }
@@ -111,7 +113,7 @@ namespace IT_Talent_001
 
 
 
-            Console.WriteLine("Completed processing of file {0}.", path);
+            Console.WriteLine("Completed processing of file [{0}].", path);
         }
     }
 }
