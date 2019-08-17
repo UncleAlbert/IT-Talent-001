@@ -104,7 +104,14 @@ namespace IT_Talent_001
                     }
                 }
 
-                // Iterate through the collection to get the Total Value and Total Weight
+
+                // Start Constructing XML Object
+                XDocument xDocument = new XDocument();
+                XDeclaration xDeclaration = new XDeclaration("1.0", "utf-16", "true");
+                XProcessingInstruction xProcessing = new XProcessingInstruction("IT Talent Tech Test", "result");
+                XComment xComment = new XComment("This is output from a console application in response to a technical test for IT Talent");
+
+               // Iterate through the collection to get the Total Value and Total Weight
                 double orderTotalWeight = 0;
                 double orderTotalValue = 0;
                 string orderNumber = "";
@@ -114,7 +121,10 @@ namespace IT_Talent_001
                     if (orderNumber != orderRecord.OrderNo)  //Must be a new order
                     {
                         orderNumber = orderRecord.OrderNo;
+                        orderTotalWeight = 0;
+                        orderTotalValue = 0;
                     }
+
                     orderTotalWeight = orderTotalWeight + Convert.ToDouble(orderRecord.ItemWeight);
                     Console.WriteLine(orderTotalWeight.ToString());
 
@@ -136,10 +146,8 @@ namespace IT_Talent_001
                 // Parcel Items
                 // Parcel Item
 
-                // XDocument xDocument = new XDocument();
-                
-               
-    
+
+
 
             }
             else
