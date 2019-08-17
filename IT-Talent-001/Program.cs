@@ -106,10 +106,15 @@ namespace IT_Talent_001
 
                 // Iterate through the collection to get the Total Value and Total Weight
                 double orderTotalWeight = 0;
+                double orderTotalValue = 0;
+                string orderNumber = "";
 
                 foreach (Order orderRecord in OrderList)
                 {
-
+                    if (orderNumber != orderRecord.OrderNo)  //Must be a new order
+                    {
+                        orderNumber = orderRecord.OrderNo;
+                    }
                     orderTotalWeight = orderTotalWeight + Convert.ToDouble(orderRecord.ItemWeight);
                     Console.WriteLine(orderTotalWeight.ToString());
 
@@ -121,9 +126,9 @@ namespace IT_Talent_001
 
                 // XML Document to contain the following nodes.
                 // Orders
+                // Order
                 // Total Value
                 // Total Weight
-                // Order
                 // Consignments
                 // Consignment
                 // Parcels
