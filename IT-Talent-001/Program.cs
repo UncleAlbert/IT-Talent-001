@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using CsvHelper;
 
 namespace IT_Talent_001
@@ -102,6 +103,39 @@ namespace IT_Talent_001
                         OrderList.Add(orderRecord);
                     }
                 }
+
+                // Iterate through the collection to get the Total Value and Total Weight
+                double orderTotalWeight = 0;
+
+                foreach (Order orderRecord in OrderList)
+                {
+
+                    orderTotalWeight = orderTotalWeight + Convert.ToDouble(orderRecord.ItemWeight);
+                    Console.WriteLine(orderTotalWeight.ToString());
+
+                    //if (orderRecord.ItemCurrency.Length() == 0)
+                    //{
+
+                    //}
+                }
+
+                // XML Document to contain the following nodes.
+                // Orders
+                // Total Value
+                // Total Weight
+                // Order
+                // Consignments
+                // Consignment
+                // Parcels
+                // Parcel
+                // Parcel Items
+                // Parcel Item
+
+                // XDocument xDocument = new XDocument();
+                
+               
+    
+
             }
             else
             {
