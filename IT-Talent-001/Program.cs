@@ -110,6 +110,7 @@ namespace IT_Talent_001
                 XDeclaration xDeclaration = new XDeclaration("1.0", "utf-16", "true");
                 XProcessingInstruction xProcessing = new XProcessingInstruction("IT Talent Tech Test", "result");
                 XComment xComment = new XComment("This is output from a console application in response to a technical test for IT Talent");
+                XElement xOrders = new XElement("ORDERS");
 
                // Iterate through the collection to get the Total Value and Total Weight
                 double orderTotalWeight = 0;
