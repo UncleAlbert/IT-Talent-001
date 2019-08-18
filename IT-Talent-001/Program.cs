@@ -128,10 +128,14 @@ namespace IT_Talent_001
                     orderTotalWeight = orderTotalWeight + Convert.ToDouble(orderRecord.ItemWeight);
                     Console.WriteLine(orderTotalWeight.ToString());
 
-                    //if (orderRecord.ItemCurrency.Length() == 0)
-                    //{
+                    // If the currency is not GBP we shall assume that it is in Euros with an exchange rate of €1.00 = £0.89
+                    // In a real world production application I would be using the XE Currency Data API to retriever a live exchange rate
+                    if (orderRecord.ItemCurrency != "")
+                    {
 
-                    //}
+                    }
+
+
                 }
 
                 // XML Document to contain the following nodes.
