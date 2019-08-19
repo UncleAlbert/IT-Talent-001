@@ -108,51 +108,83 @@ namespace IT_Talent_001
                 // Start Constructing XML Object
                 XDocument xDocument = new XDocument();
                 XDeclaration xDeclaration = new XDeclaration("1.0", "utf-16", "true");
-                XProcessingInstruction xProcessing = new XProcessingInstruction("IT Talent Tech Test", "result");
+                XProcessingInstruction xProcessing = new XProcessingInstruction("IT-Talent-Tech-Test", "result");
                 XComment xComment = new XComment("This is output from a console application in response to a technical test for IT Talent");
                 XElement xOrders = new XElement("ORDERS");
+                XElement xOrder;
+                XElement xConsignments = new XElement("CONSIGNMENTS");
+                XElement xConsignment;
+                XElement xParcels = new XElement("PARCELS"); 
+                XElement xParcel = new XElement("PARCEL"); 
+                XElement xParcelItems = new XElement("ITEMS"); 
+                XElement xParcelItem = new XElement("ITEM");
+                XElement xOrderTotalWeight;
+                XElement xOrderTotalValue;
 
-               // Iterate through the collection to get the Total Value and Total Weight
-                double orderTotalWeight = 0;
-                double orderTotalValue = 0;
+
+                // Iterate through the collection to get the Total Value and Total Weight
+                decimal orderTotalWeight = 0;
+                decimal orderTotalValue = 0;
                 string orderNumber = "";
+                string orderConsignmentNumber = "";
+                string orderParcelCode = "";
+                string orderItemDescription = "";
+
+                decimal exchangeRate = 0.89M;
+                
 
                 foreach (Order orderRecord in OrderList)
                 {
                     if (orderNumber != orderRecord.OrderNo)  //Must be a new order
                     {
+
+                        // Start constructing the Order Node
+                        if (orderNumber != "")
+                        {
+                            xOrder = new XElement("ORDER", orderNumber);
+                            xOrder.Add(xConsignments);
+                            xOrders.Add(xOrder);
+                        }
+
+
                         orderNumber = orderRecord.OrderNo;
                         orderTotalWeight = 0;
                         orderTotalValue = 0;
+
                     }
 
-                    orderTotalWeight = orderTotalWeight + Convert.ToDouble(orderRecord.ItemWeight);
-                    Console.WriteLine(orderTotalWeight.ToString());
+                    orderTotalWeight = orderTotalWeight + Convert.ToDecimal(orderRecord.ItemWeight);
 
                     // If the currency is not GBP we shall assume that it is in Euros with an exchange rate of €1.00 = £0.89
                     // In a real world production application I would be using the XE Currency Data API to retriever a live exchange rate
                     if (orderRecord.ItemCurrency != "")
                     {
-
+                        orderTotalValue = orderTotalValue + (Convert.ToDecimal(orderRecord.ItemValue) * exchangeRate);
                     }
+                    else
+                    {
+                        orderTotalValue = orderTotalValue + Convert.ToDecimal(orderRecord.ItemValue);
+                    }
+
+                    // Build up the consignments node
+                    //if (orderConsignmentNumber != orderRecord.ConsignmentNo)
+                    //{
+                    //    // Must be a new consignment so remove all child elements
+                    //    xConsignments.RemoveAll();
+                    //    xConsignment = new XElement("CONSIGNMENT", orderRecord.ConsignmentNo);
+
+
+                    //}
 
 
                 }
 
-                // XML Document to contain the following nodes.
-                // Orders
-                // Order
-                // Total Value
-                // Total Weight
-                // Consignments
-                // Consignment
-                // Parcels
-                // Parcel
-                // Parcel Items
-                // Parcel Item
-
-
-
+                // Build final XML Document
+                xDocument.Declaration = xDeclaration;
+                xDocument.Add(xProcessing);
+                xDocument.Add(xComment);
+                xDocument.Add(xOrders);
+                xDocument.Save("C:\\Users\\Stephen P Smith\\source\\repos\\Tech Tests\\IT-Talent\\IT-Talent-001\\XMLOutput\\IT-Talent-001.xml");
 
             }
             else
