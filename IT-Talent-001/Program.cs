@@ -127,6 +127,7 @@ namespace IT_Talent_001
                 decimal orderTotalValue = 0;
                 string orderNumber = "";
                 string orderConsignmentNumber = "";
+                string previousOrderConsignmentNumber = "";
                 string orderParcelCode = "";
                 string orderItemDescription = "";
 
@@ -138,12 +139,46 @@ namespace IT_Talent_001
                     if (orderNumber != orderRecord.OrderNo)  //Must be a new order
                     {
 
-                        // Start constructing the Order Node
+                        // Construct ORDER XML Node
                         if (orderNumber != "")
                         {
                             xOrder = new XElement("ORDER", orderNumber);
+                            xOrder.Add(new XElement("TOTALWEIGHT", orderTotalWeight));
+                            xOrder.Add(new XElement("TOTALVALUE", orderTotalValue));
                             xOrder.Add(xConsignments);
                             xOrders.Add(xOrder);
+
+                            // Construct CONSIGNMENTS XML Node
+                            orderConsignmentNumber = orderRecord.ConsignmentNo;
+                            if (orderConsignmentNumber != previousOrderConsignmentNumber)
+                            {
+
+                                xConsignments = new XElement("CONSIGNMENTS");
+                                xConsignment = new XElement("CONSIGNMENT", orderConsignmentNumber);
+                                xConsignment.Add(xParcels);
+                                xConsignments.Add(xConsignment);
+
+                                //if (orderConsignmentNumber != "")
+                                //{
+
+                                //    // Construct PARCEL XML Node
+                                //    if (orderParcelCode != orderRecord.ParcelCode)
+                                //    {
+                                //        if (orderParcelCode != "")
+                                //        {
+                                //            xParcels = new XElement("PARCELS");
+                                //            xParcel = new XElement("PARCEL", orderParcelCode);
+                                //            xParcel.Add(xParcels);
+                                //            xParcels.Add(xParcel);
+                                //        }
+                                //        orderParcelCode = orderRecord.ParcelCode;
+
+                                //    }
+                                //}
+                                
+                            }
+
+                            previousOrderConsignmentNumber = orderRecord.ConsignmentNo;
                         }
 
 
@@ -153,6 +188,7 @@ namespace IT_Talent_001
 
                     }
 
+                    // Calculate total weight and toal value for each order
                     orderTotalWeight = orderTotalWeight + Convert.ToDecimal(orderRecord.ItemWeight);
 
                     // If the currency is not GBP we shall assume that it is in Euros with an exchange rate of €1.00 = £0.89
@@ -166,18 +202,10 @@ namespace IT_Talent_001
                         orderTotalValue = orderTotalValue + Convert.ToDecimal(orderRecord.ItemValue);
                     }
 
-                    // Build up the consignments node
-                    //if (orderConsignmentNumber != orderRecord.ConsignmentNo)
-                    //{
-                    //    // Must be a new consignment so remove all child elements
-                    //    xConsignments.RemoveAll();
-                    //    xConsignment = new XElement("CONSIGNMENT", orderRecord.ConsignmentNo);
-
-
-                    //}
-
-
                 }
+
+
+
 
                 // Build final XML Document
                 xDocument.Declaration = xDeclaration;
