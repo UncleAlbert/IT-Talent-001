@@ -64,7 +64,7 @@ namespace IT_Talent_001
             foreach (string fileName in fileEntries)
             {
                 ProcessFile(fileName);
-            }                
+            }
 
             // If the directory contains sub-directories then we can recurse into those directory subdirectories.
             string[] subdirectoryEntries = Directory.GetDirectories(targetDirectory);
@@ -73,6 +73,8 @@ namespace IT_Talent_001
                 ProcessDirectory(subdirectory);
             }
         }
+
+
 
         public static void ProcessFile(string path)
         {
@@ -98,7 +100,7 @@ namespace IT_Talent_001
                     fileToProcess.Configuration.MissingFieldFound = null;
                     while (fileToProcess.Read())
                     {
-                        
+
                         Order orderRecord = fileToProcess.GetRecord<Order>();
                         OrderList.Add(orderRecord);
                     }
@@ -114,9 +116,9 @@ namespace IT_Talent_001
                 XElement xOrder;
                 XElement xConsignments = new XElement("CONSIGNMENTS");
                 XElement xConsignment;
-                XElement xParcels = new XElement("PARCELS"); 
-                XElement xParcel = new XElement("PARCEL"); 
-                XElement xParcelItems = new XElement("ITEMS"); 
+                XElement xParcels = new XElement("PARCELS");
+                XElement xParcel = new XElement("PARCEL");
+                XElement xParcelItems = new XElement("ITEMS");
                 XElement xParcelItem = new XElement("ITEM");
                 XElement xOrderTotalWeight;
                 XElement xOrderTotalValue;
@@ -126,73 +128,34 @@ namespace IT_Talent_001
                 decimal orderTotalWeight = 0;
                 decimal orderTotalValue = 0;
                 string orderNumber = "";
+                string previousOrderNumber = "";
                 string orderConsignmentNumber = "";
                 string previousOrderConsignmentNumber = "";
                 string orderParcelCode = "";
                 string previousOrderParcelCode = "";
                 string orderItemDescription = "";
 
-                decimal exchangeRate = 0.89M;
-                
-
                 foreach (Order orderRecord in OrderList)
                 {
-                    if (orderNumber != orderRecord.OrderNo)  //Must be a new order
-                    {
+                    orderNumber = orderRecord.OrderNo;
 
+
+                    orderTotalWeight = CalculateOrderWeight(orderNumber, OrderList);
+                    orderTotalValue = CalculateOrderValue(orderNumber, OrderList);
+
+                    if (previousOrderNumber != orderNumber)
+                    {
                         // Construct ORDER XML Node
-                        if (orderNumber != "")
-                        {
-                            xOrder = new XElement("ORDER", orderNumber);
-                            xOrder.Add(new XElement("TOTALWEIGHT", orderTotalWeight));
-                            xOrder.Add(new XElement("TOTALVALUE", orderTotalValue));
-                            xOrder.Add(xConsignments);
-                            xOrders.Add(xOrder);
-
-                        }
-
-                        orderNumber = orderRecord.OrderNo;
-                        orderTotalWeight = 0;
-                        orderTotalValue = 0;
-
+                        xOrder = new XElement("ORDER", orderNumber);
+                        xOrder.Add(new XElement("TOTALWEIGHT", orderTotalWeight));
+                        xOrder.Add(new XElement("TOTALVALUE", orderTotalValue));
+                        xOrder.Add(xConsignments);
+                        xOrders.Add(xOrder);
                     }
-                    
-                    // Construct CONSIGNMENTS XML Node
-                    orderConsignmentNumber = orderRecord.ConsignmentNo;
-                    if (orderConsignmentNumber != previousOrderConsignmentNumber)
-                    {
-                        xConsignments = new XElement("CONSIGNMENTS");
-                        xConsignment = new XElement("CONSIGNMENT", orderConsignmentNumber);
-                        xConsignment.Add(xParcels);
-                        xConsignments.Add(xConsignment);
-                    }
- 
-                    // PARCELS XML Node
-                    orderParcelCode = orderRecord.ParcelCode;
-                    //if (orderParcelCode != previousOrderParcelCode)
-                    //{
-                    //    xParcels = new XElement("PARCELS");
-                    //    xParcel = new XElement("PARCEL");
-                    //    xParcel.Add(xParcelItems);
-                    //    xParcels.Add(xParcel);
-                    //}
 
+                    previousOrderNumber = orderRecord.OrderNo;
                     previousOrderConsignmentNumber = orderRecord.ConsignmentNo;
                     previousOrderParcelCode = orderRecord.ParcelCode;
-
-                    // Calculate total weight and toal value for each order
-                    orderTotalWeight = orderTotalWeight + Convert.ToDecimal(orderRecord.ItemWeight);
-
-                    // If the currency is not GBP we shall assume that it is in Euros with an exchange rate of €1.00 = £0.89
-                    // In a real world production application I would be using the XE Currency Data API to retriever a live exchange rate
-                    if (orderRecord.ItemCurrency != "")
-                    {
-                        orderTotalValue = orderTotalValue + (Convert.ToDecimal(orderRecord.ItemValue) * exchangeRate);
-                    }
-                    else
-                    {
-                        orderTotalValue = orderTotalValue + Convert.ToDecimal(orderRecord.ItemValue);
-                    }
 
                 }
 
@@ -213,11 +176,53 @@ namespace IT_Talent_001
             }
 
 
-
-
-
-
             Console.WriteLine("Completed processing of file [{0}].", path);
+        }
+
+        public static decimal CalculateOrderWeight(string orderNumber, List<Order> OrderList)
+        {
+            decimal orderTotalWeight = 0;
+
+            // Iterate through the list to extracte the order weight
+            foreach (Order orderRecord in OrderList)
+            {
+                if (orderNumber == orderRecord.OrderNo)
+                {
+                    orderTotalWeight = orderTotalWeight + Convert.ToDecimal(orderRecord.ItemWeight);
+                }
+            }
+
+            return orderTotalWeight;
+        }
+
+        public static decimal CalculateOrderValue(string orderNumber, List<Order> OrderList)
+        {
+
+            decimal orderTotalValue = 0;
+            decimal exchangeRate = 0.89M;
+
+            // Iterate throught the order list to extract the order value
+            foreach (Order orderRecord in OrderList)
+            {
+
+                if (orderNumber == orderRecord.OrderNo)
+                {
+                    // If the currency is not GBP we shall assume that it is in Euros with an exchange rate of €1.00 = £0.89
+                    // In a real world production application I would be using the XE Currency Data API to retriever a live exchange rate
+                    if (orderRecord.ItemCurrency != "")
+                    {
+                        orderTotalValue = orderTotalValue + (Convert.ToDecimal(orderRecord.ItemValue) * exchangeRate);
+                    }
+                    else
+                    {
+                        orderTotalValue = orderTotalValue + Convert.ToDecimal(orderRecord.ItemValue);
+                    }
+
+                }
+
+            }
+
+            return orderTotalValue;
         }
     }
 }
