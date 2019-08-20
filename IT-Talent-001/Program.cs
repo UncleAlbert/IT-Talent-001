@@ -245,7 +245,7 @@ namespace IT_Talent_001
                     {
                         
                         xConsignment = new XElement("CONSIGNMENT", orderConsignmentNumber);
-                        xConsignment.Add(GetParcels);
+                        xConsignment.Add(GetParcels(orderNumber, orderConsignmentNumber, OrderList));
                         xConsignments.Add(xConsignment);
                     }
                 }
