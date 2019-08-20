@@ -120,8 +120,6 @@ namespace IT_Talent_001
                 XElement xParcel = new XElement("PARCEL");
                 XElement xParcelItems = new XElement("ITEMS");
                 XElement xParcelItem = new XElement("ITEM");
-                XElement xOrderTotalWeight;
-                XElement xOrderTotalValue;
 
 
                 // Iterate through the collection to get the Total Value and Total Weight
@@ -142,6 +140,8 @@ namespace IT_Talent_001
 
                     orderTotalWeight = CalculateOrderWeight(orderNumber, OrderList);
                     orderTotalValue = CalculateOrderValue(orderNumber, OrderList);
+                    //xConsignments = GetConsignments(orderNumber, OrderList);
+
 
                     if (previousOrderNumber != orderNumber)
                     {
@@ -149,7 +149,7 @@ namespace IT_Talent_001
                         xOrder = new XElement("ORDER", orderNumber);
                         xOrder.Add(new XElement("TOTALWEIGHT", orderTotalWeight));
                         xOrder.Add(new XElement("TOTALVALUE", orderTotalValue));
-                        xOrder.Add(xConsignments);
+                        xOrder.Add(GetConsignments(orderNumber, OrderList));
                         xOrders.Add(xOrder);
                     }
 
@@ -158,8 +158,6 @@ namespace IT_Talent_001
                     previousOrderParcelCode = orderRecord.ParcelCode;
 
                 }
-
-
 
 
                 // Build final XML Document
@@ -223,6 +221,55 @@ namespace IT_Talent_001
             }
 
             return orderTotalValue;
+        }
+
+        public static XElement GetConsignments(string orderNumber, List<Order> OrderList)
+        {
+
+            string orderConsignmentNumber = "";
+            string previousOrderConsignmentNumber = "";
+            XElement xConsignments = new XElement("CONSIGNMENTS");
+            XElement xConsignment;
+
+            // Iterate through the order list and order to extract the consignments
+            foreach (Order orderRecord in OrderList)
+            {
+                if (orderNumber == orderRecord.OrderNo)
+                {
+
+                    xConsignments = new XElement("CONSIGNMENTS");
+                    
+                    // Construct CONSIGNMENTS XML Node
+                    orderConsignmentNumber = orderRecord.ConsignmentNo;
+                    if (orderConsignmentNumber != previousOrderConsignmentNumber)
+                    {
+                        
+                        xConsignment = new XElement("CONSIGNMENT", orderConsignmentNumber);
+                        xConsignment.Add(GetParcels);
+                        xConsignments.Add(xConsignment);
+                    }
+                }
+
+            }
+
+            return xConsignments;
+
+        }
+
+        public static XElement GetParcels(string orderNumber, string consignmentNumber, List<Order> Orderlist)
+        {
+
+            XElement xParcels = new XElement("PARCELS");
+            XElement xParcel;
+
+            // Iterate through the order list to extract the parcels for a consignment number
+            foreach (Order orderRecord in Orderlist)
+            {
+
+            }
+
+            return xParcels;
+
         }
     }
 }
