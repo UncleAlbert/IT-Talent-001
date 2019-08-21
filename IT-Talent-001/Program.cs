@@ -235,9 +235,7 @@ namespace IT_Talent_001
             {
                 if (orderNumber == orderRecord.OrderNo)
                 {
-
-                    xConsignments = new XElement("CONSIGNMENTS");
-                    
+                   
                     // Construct CONSIGNMENTS XML Node
                     orderConsignmentNumber = orderRecord.ConsignmentNo;
                     if (orderConsignmentNumber != previousOrderConsignmentNumber)
@@ -246,6 +244,7 @@ namespace IT_Talent_001
                         xConsignment = new XElement("CONSIGNMENT", orderConsignmentNumber);
                         xConsignment.Add(GetParcels(orderNumber, orderConsignmentNumber, OrderList));
                         xConsignments.Add(xConsignment);
+                        previousOrderConsignmentNumber = orderConsignmentNumber;
                     }
                 }
 
@@ -264,7 +263,7 @@ namespace IT_Talent_001
             // Iterate through the order list to extract the parcels for a consignment number
             foreach (Order orderRecord in Orderlist)
             {
-                if (orderNumber == orderRecord.OrderNo)
+                if ((orderNumber == orderRecord.OrderNo) && (consignmentNumber == orderRecord.ConsignmentNo))
                 {
                     xParcel = new XElement("PARCEL", orderRecord.ParcelCode);
                     xParcel.Add(GetParcelItems(orderNumber, consignmentNumber, orderRecord.ParcelCode, Orderlist));
