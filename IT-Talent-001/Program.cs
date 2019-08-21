@@ -265,11 +265,32 @@ namespace IT_Talent_001
             // Iterate through the order list to extract the parcels for a consignment number
             foreach (Order orderRecord in Orderlist)
             {
-
+                if (orderNumber == orderRecord.OrderNo)
+                {
+                    xParcel = new XElement("PARCEL", orderRecord.ParcelCode);
+                    xParcel.Add(GetParcelItems(orderNumber, consignmentNumber, orderRecord.ParcelCode, Orderlist));
+                    xParcels.Add(xParcel);
+                }
             }
 
             return xParcels;
 
+        }
+
+        public static XElement GetParcelItems(string orderNumber, string consignmentNumber, string parcelCode, List<Order> Orderlist)
+        {
+            XElement xParcelItems = new XElement("PARCELITEMS");
+            XElement xParcelItem;
+
+            foreach (Order orderRecord in Orderlist)
+            {
+                if ((orderNumber == orderRecord.OrderNo) && (consignmentNumber == orderRecord.ConsignmentNo) && (parcelCode==orderRecord.ParcelCode))
+                {
+                    xParcelItem = new XElement("PARCELITEM", orderRecord.ItemDescription);
+                    xParcelItems.Add(xParcelItem);
+                }
+            }
+            return xParcelItems;
         }
     }
 }
