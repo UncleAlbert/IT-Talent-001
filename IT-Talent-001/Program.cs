@@ -78,12 +78,22 @@ namespace IT_Talent_001
 
         public static void ProcessFile(string path)
         {
+
             Console.WriteLine("Commenced processing of file [{0}].", path);
 
             //We need to check that the file is a csv file
             Console.WriteLine("Checking File Type");
             string fileExtension;
             fileExtension = Path.GetExtension(path);
+
+
+            // Assume output XML is saved to same directory as input file
+            string fileNameToSave = "";
+            fileNameToSave =    Path.GetDirectoryName(path) + 
+                                Path.DirectorySeparatorChar + 
+                                Path.GetFileNameWithoutExtension(path) + ".xml";
+
+            Console.WriteLine(fileNameToSave);
 
             if (fileExtension.ToUpper().Substring(1) == "CSV")
             {
@@ -115,11 +125,6 @@ namespace IT_Talent_001
                 XElement xOrders = new XElement("ORDERS");
                 XElement xOrder;
                 XElement xConsignments = new XElement("CONSIGNMENTS");
-                XElement xConsignment;
-                XElement xParcels = new XElement("PARCELS");
-                XElement xParcel = new XElement("PARCEL");
-                XElement xParcelItems = new XElement("ITEMS");
-                XElement xParcelItem = new XElement("ITEM");
 
 
                 // Iterate through the collection to get the Total Value and Total Weight
@@ -127,21 +132,15 @@ namespace IT_Talent_001
                 decimal orderTotalValue = 0;
                 string orderNumber = "";
                 string previousOrderNumber = "";
-                string orderConsignmentNumber = "";
                 string previousOrderConsignmentNumber = "";
-                string orderParcelCode = "";
                 string previousOrderParcelCode = "";
-                string orderItemDescription = "";
 
                 foreach (Order orderRecord in OrderList)
                 {
                     orderNumber = orderRecord.OrderNo;
 
-
                     orderTotalWeight = CalculateOrderWeight(orderNumber, OrderList);
                     orderTotalValue = CalculateOrderValue(orderNumber, OrderList);
-                    //xConsignments = GetConsignments(orderNumber, OrderList);
-
 
                     if (previousOrderNumber != orderNumber)
                     {
@@ -165,7 +164,7 @@ namespace IT_Talent_001
                 xDocument.Add(xProcessing);
                 xDocument.Add(xComment);
                 xDocument.Add(xOrders);
-                xDocument.Save("C:\\Users\\Stephen P Smith\\source\\repos\\Tech Tests\\IT-Talent\\IT-Talent-001\\XMLOutput\\IT-Talent-001.xml");
+                xDocument.Save(fileNameToSave);
 
             }
             else
